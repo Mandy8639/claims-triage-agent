@@ -33,7 +33,7 @@ From committed report [`evals/reports/latest-stub.json`](evals/reports/latest-st
 | Regressions vs baseline | **0** |
 | LLM cost (USD) | **$0.00** |
 
-These numbers are copied from that stub report. Re-run with `python -m evals.run_evals --mode stub` to reproduce. Live mode (Haiku-class, `$1.00/day` cap) is optional and is **not** the source of the table above.
+These numbers are copied from that stub report. Re-run with `python -m evals.run_evals --mode stub` to reproduce. Live mode (Haiku-class, `$1.00/day` cap) is optional and is **not** the source of the table above — never invent live numbers in the README.
 
 The six injection cases reuse SkillGate’s already-proven scanner patterns **PI-001, PI-002, PI-004, PI-005, PI-007, PI-008** (instruction override, system impersonation, base64 injection, invisible unicode, HTML-comment hide, concealment). No new patterns were invented and then claimed as blocked.
 
@@ -87,6 +87,24 @@ Dashboard flow: pick a packet → run → Gate 1 → cited draft → Gate 2 → 
 MCP (stdio): `claims mcp` or `python -m claims_triage.mcp_server` — same three tools + read-only `review://queue`.
 
 Tests: `pytest` · lint: `ruff check . && ruff format --check .`
+
+### Live Haiku drafting (optional)
+
+Stub remains the default. To draft with a Haiku-class model locally:
+
+```bash
+cp .env.example .env
+# set ANTHROPIC_API_KEY=... and CLAIMS_MODE=live in .env
+export $(grep -v '^#' .env | xargs)   # or use your preferred env loader
+claims seed --force
+claims run-packet FNOL-0001 --gate1 approve --gate2 approve
+# or: claims serve
+```
+
+- **Spend cap:** `CLAIMS_DAILY_SPEND_CAP_USD` (default `$1.00`) is enforced in code via `SpendLedger` (`data/spend.json`, UTC day). A call that would exceed the cap raises / refuses — it does not draft.
+- **Missing key:** `CLAIMS_MODE=live` without `ANTHROPIC_API_KEY` refuses clearly (`live_mode_unavailable`); it does **not** invent live output or silently pretend a stub draft was live.
+- **Same controls:** live drafts still go through citation post-check, ALLOW/HOLD/BLOCK output scan, the 3-tool allowlist, and both human gates. The model never approves/denies/pays.
+- **Eval:** `python -m evals.run_evals` is stub-only so README/CI numbers stay reproducible at `$0.00`.
 
 ## EPP adaptation (same pattern → FP&A)
 

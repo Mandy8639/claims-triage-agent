@@ -6,6 +6,7 @@ __pycache__/
 .env
 data/*.db
 data/*.db-*
+data/spend.json
 *.egg-info/
 dist/
 build/

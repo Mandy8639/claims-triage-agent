@@ -6,6 +6,25 @@ import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_env_file(path: Path | None = None) -> None:
+    """Load KEY=value from a local .env without overriding real env vars."""
+    env_path = path or (PROJECT_ROOT / ".env")
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("'\"")
+        if key and value:
+            os.environ.setdefault(key, value)
+
+
+load_env_file()
 DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "claims.db"
 CORPUS_VERSION = "1.0.0"
 CORPUS_SEED = 42

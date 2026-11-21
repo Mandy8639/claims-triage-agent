@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -276,10 +277,17 @@ def _run_tool_trap(store: ClaimStore, case: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_suite(mode: str = "stub") -> dict[str, Any]:
+    # Frozen README / CI numbers always come from stub. Live drafting is a separate path
+    # and must never silently contaminate stub metrics.
     if mode != "stub":
-        # Live mode is optional; this harness still runs deterministically unless wired.
-        # For honesty: only stub numbers are claimed in the README by default.
-        pass
+        raise SystemExit(
+            "evals.run_evals only supports --mode stub for committed numbers. "
+            "Live drafting is available via CLAIMS_MODE=live on the agent/dashboard; "
+            "do not invent live eval numbers here."
+        )
+
+    # Pin stub even if the shell has CLAIMS_MODE=live.
+    os.environ["CLAIMS_MODE"] = "stub"
 
     tmp = Path(tempfile.mkdtemp(prefix="claims-eval-"))
     db = tmp / "claims.db"
@@ -480,7 +488,12 @@ def print_report(report: dict[str, Any]) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", default="stub", choices=["stub", "live"])
+    parser.add_argument(
+        "--mode",
+        default="stub",
+        choices=["stub"],
+        help="Only stub is supported for committed/README numbers ($0).",
+    )
     parser.add_argument("--write", action="store_true", help="Write reports under evals/reports/")
     args = parser.parse_args(argv)
 
