@@ -1,0 +1,46 @@
+[project]
+name = "claims-triage-agent"
+version = "0.1.0"
+description = "Bounded claims triage and drafting agent over a synthetic life-insurance corpus (demo; not affiliated with New York Life)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "anthropic>=0.39.0",
+    "pydantic>=2.0",
+    "typer>=0.12.0",
+    "rich>=13.0",
+    "httpx>=0.27.0",
+    "mcp>=2.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8.0",
+]
+
+[project.scripts]
+claims = "claims_triage.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["claims_triage", "evals"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["claims_triage", "tests", "evals"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

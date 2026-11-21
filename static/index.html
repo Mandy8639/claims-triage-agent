@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>claims-triage-agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/styles.css"/>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="eyebrow">claims-triage-agent</p>
+        <h1>Bounded claims triage &amp; drafting</h1>
+      </div>
+    </div>
+    <p class="disclaimer">Demo · <strong>synthetic data only</strong> · not affiliated with New York Life · never approves, denies, or pays a claim</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel hero-flow">
+      <div class="panel-head">
+        <h2>Run a packet</h2>
+        <span class="muted">validate → Gate 1 → draft → Gate 2 → log only</span>
+      </div>
+      <div class="run-row">
+        <label for="packet-select">FNOL packet</label>
+        <select id="packet-select"></select>
+        <button type="button" id="run-btn" class="primary">Run through agent</button>
+      </div>
+      <ol class="pipeline" id="pipeline">
+        <li data-step="scan">Input scan</li>
+        <li data-step="validate">Validate</li>
+        <li data-step="gate1">Gate 1</li>
+        <li data-step="draft">Draft</li>
+        <li data-step="gate2">Gate 2</li>
+        <li data-step="log">Log</li>
+      </ol>
+    </section>
+
+    <section class="panel" id="result-panel">
+      <div class="panel-head">
+        <h2>Current run</h2>
+        <span id="verdict-badge" class="badge">idle</span>
+      </div>
+      <div id="result-meta" class="meta-grid"></div>
+      <h3>Validation report</h3>
+      <pre id="validation-box" class="code">Select a packet and run.</pre>
+      <div class="gate-row" id="gate1-row">
+        <h3>Gate 1 — adjuster review (before drafting)</h3>
+        <p class="muted">If validation fails, drafting stays disabled.</p>
+        <div class="btn-row">
+          <button type="button" data-gate="gate1" data-decision="approve" class="primary gate-btn" disabled>Approve to draft</button>
+          <button type="button" data-gate="gate1" data-decision="reject" class="ghost gate-btn" disabled>Reject</button>
+        </div>
+      </div>
+      <h3>Draft with citations</h3>
+      <pre id="draft-box" class="code">No draft yet.</pre>
+      <div class="gate-row" id="gate2-row">
+        <h3>Gate 2 — approve / edit before “send”</h3>
+        <p class="muted">Send is a stub that only logs — nothing is transmitted.</p>
+        <div class="btn-row">
+          <button type="button" data-gate="gate2" data-decision="approve" class="primary gate-btn" disabled>Approve (log send)</button>
+          <button type="button" data-gate="gate2" data-decision="reject" class="ghost gate-btn" disabled>Reject</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="eval-panel">
+      <div class="panel-head">
+        <h2>Latest stub eval</h2>
+        <span class="badge badge-teal">$0.00</span>
+      </div>
+      <div id="eval-table"></div>
+      <p id="eval-note" class="muted"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Every number on this page loads from the API / committed stub report. All corpus records are synthetic.</p>
+  </footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>
